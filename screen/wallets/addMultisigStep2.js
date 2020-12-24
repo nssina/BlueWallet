@@ -312,7 +312,6 @@ const WalletsAddMultisigStep2 = () => {
   };
 
   const onBarScanned = ret => {
-    setIsProvideMnemonicsModalVisible(false);
     if (!isDesktop) navigation.dangerouslyGetParent().pop();
     if (!ret.data) ret = { data: ret };
     if (ret.data.toUpperCase().startsWith('UR')) {
@@ -323,7 +322,7 @@ const WalletsAddMultisigStep2 = () => {
     } else {
       let cosigner = new MultisigCosigner(ret.data);
       if (!cosigner.isValid()) return alert(loc.multisig.invalid_cosigner);
-
+      setIsProvideMnemonicsModalVisible(false);
       if (cosigner.howManyCosignersWeHave() > 1) {
         // lets look for the correct cosigner. thats probably gona be the one with specific corresponding path,
         // for example m/48'/0'/0'/2' if user chose to setup native segwit in BW
@@ -391,8 +390,9 @@ const WalletsAddMultisigStep2 = () => {
 
   const scanOrOpenFile = () => {
     if (isDesktop) {
-      fs.showActionSheet().then(data => onBarScanned({ data }));
+      fs.showActionSheet().then(onBarScanned);
     } else {
+      setIsProvideMnemonicsModalVisible(false);
       navigation.navigate('ScanQRCodeRoot', {
         screen: 'ScanQRCode',
         params: {
